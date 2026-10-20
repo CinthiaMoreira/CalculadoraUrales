@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -75,7 +76,7 @@
   <h1 class="title">Calculadora Financiera</h1>
   <p class="subtitle">Simule el costo financiero de sus operaciones de anticipo de facturas de Urales.</p>
 
-  <!-- Primera tabla: SPRED, SOFR, Total Anual -->
+  <!-- Primera tabla: SPREAD, SOFR, Total Anual -->
   <table>
     <tr>
       <th>SPRED</th>
@@ -91,10 +92,12 @@
     </tr>
   </table>
 
-    <p class="info">
-    Consulta la tasa SOFR actual en <a href="https://www.global-rates.com/es/tipos-de-interes/cme-term-sofr/3/term-sofr-interes-6-meses/" target="_blank" rel="noopener noreferrer">global-rates.com</a> y actualízala manualmente si es necesario.
+  <p class="info">
+    Consulta la tasa SOFR actual en
+    <a href="https://www.global-rates.com/es/tipos-de-interes/cme-term-sofr/3/term-sofr-interes-6-meses/" target="_blank" rel="noopener noreferrer">global-rates.com</a>
+    y actualízala manualmente si es necesario.
   </p>
-  
+
   <!-- Segunda tabla azul: Fecha de vencimiento y monto de factura -->
   <table class="tabla-azul">
     <tr>
@@ -122,43 +125,73 @@
       <td class="result" id="costoFinanciero"></td>
     </tr>
     <tr>
-      <th>Monto a recibir</th>
+      <th>Comisión bancaria</th>
+      <td class="result" id="comisionBancaria"></td>
+    </tr>
+    <tr>
+      <th>Monto transferido </th>
       <td class="result" id="montoRecibir"></td>
     </tr>
   </table>
+
+    <p class="info info-small">
+    Nota: Su banco puede aplicar comisiones adicionales por la recepción de los fondos.
+  </p>
 
   <script>
     function calcular() {
       const spred = 2.95;
       const sofr = parseFloat(document.getElementById('sofr').value) || 0;
       const tasaAnual = spred + sofr;
-      document.getElementById('tasaAnualText').textContent = tasaAnual.toFixed(2) + '%';
+
+      document.getElementById('tasaAnualText').textContent =
+        tasaAnual.toFixed(2) + '%';
 
       const fechaInput = document.getElementById('fechaVencimiento').value;
       const montoInput = document.getElementById('montoFactura').value;
 
-      if (!fechaInput || !montoInput) {
+      if (!fechaInput || montoInput === '') {
         // Vaciar resultados si falta fecha o monto
         document.getElementById('diasAnticipados').textContent = '';
         document.getElementById('tasaProporcional').textContent = '';
         document.getElementById('costoFinanciero').textContent = '';
+        document.getElementById('comisionBancaria').textContent = '';
         document.getElementById('montoRecibir').textContent = '';
         return;
       }
 
       const fechaVencimiento = new Date(fechaInput);
       const hoy = new Date();
-      const diasAnticipados = Math.max(0, Math.floor((fechaVencimiento - hoy) / (1000 * 60 * 60 * 24)));
+
+      const diasAnticipados = Math.max(
+        0,
+        Math.floor((fechaVencimiento - hoy) / (1000 * 60 * 60 * 24))
+      );
 
       const tasaProporcional = tasaAnual * diasAnticipados / 360;
       const montoFactura = parseFloat(montoInput) || 0;
       const costoFinanciero = montoFactura * (tasaProporcional / 100);
-      const montoRecibir = montoFactura - costoFinanciero;
 
-      document.getElementById('diasAnticipados').textContent = diasAnticipados;
-      document.getElementById('tasaProporcional').textContent = tasaProporcional.toFixed(2) + '%';
-      document.getElementById('costoFinanciero').textContent = costoFinanciero.toFixed(2);
-      document.getElementById('montoRecibir').textContent = montoRecibir.toFixed(2);
+      // Comisión bancaria fija de 15 USD
+      const comisionBancaria = 15;
+
+      // Descontar el costo financiero y la comisión bancaria
+      const montoRecibir = montoFactura - costoFinanciero - comisionBancaria;
+
+      document.getElementById('diasAnticipados').textContent =
+        diasAnticipados;
+
+      document.getElementById('tasaProporcional').textContent =
+        tasaProporcional.toFixed(2) + '%';
+
+      document.getElementById('costoFinanciero').textContent =
+        costoFinanciero.toFixed(2) + ' USD';
+
+      document.getElementById('comisionBancaria').textContent =
+        comisionBancaria.toFixed(2) + ' USD';
+
+      document.getElementById('montoRecibir').textContent =
+        montoRecibir.toFixed(2) + ' USD';
     }
 
     ['sofr', 'fechaVencimiento', 'montoFactura'].forEach(id => {
@@ -174,3 +207,4 @@
   </script>
 </body>
 </html>
+```
