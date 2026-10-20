@@ -1,4 +1,3 @@
-```html
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -68,6 +67,10 @@
       margin: 0 auto 1em auto;
       text-align: center;
     }
+    p.info-small {
+      font-size: 0.9em;
+      color: #555;
+    }
   </style>
 </head>
 <body>
@@ -84,7 +87,7 @@
     </tr>
     <tr>
       <th>SOFR del día</th>
-      <td><input type="number" step="0.01" id="sofr" value="4.07" /></td>
+      <td><input type="number" step="0.01" id="sofr" value="4.05" /></td>
     </tr>
     <tr>
       <th>Tasa Anual</th>
@@ -126,36 +129,43 @@
     </tr>
     <tr>
       <th>Comisión bancaria</th>
-      <td class="result" id="comisionBancaria"></td>
+      <td class="result" id="comisionBancaria">15.00 USD</td>
     </tr>
     <tr>
-      <th>Monto transferido </th>
+      <th>Monto transferido</th>
       <td class="result" id="montoRecibir"></td>
     </tr>
   </table>
 
-    <p class="info info-small">
+  <p class="info info-small">
     Nota: Su banco puede aplicar comisiones adicionales por la recepción de los fondos.
   </p>
 
   <script>
     function calcular() {
       const spred = 2.95;
+      const comisionBancaria = 15;
+
       const sofr = parseFloat(document.getElementById('sofr').value) || 0;
       const tasaAnual = spred + sofr;
 
       document.getElementById('tasaAnualText').textContent =
         tasaAnual.toFixed(2) + '%';
 
+      // La comisión bancaria se muestra siempre,
+      // incluso antes de introducir los datos.
+      document.getElementById('comisionBancaria').textContent =
+        comisionBancaria.toFixed(2) + ' USD';
+
       const fechaInput = document.getElementById('fechaVencimiento').value;
       const montoInput = document.getElementById('montoFactura').value;
 
       if (!fechaInput || montoInput === '') {
-        // Vaciar resultados si falta fecha o monto
+        // Vaciar los demás resultados si faltan datos.
+        // La comisión bancaria permanece visible.
         document.getElementById('diasAnticipados').textContent = '';
         document.getElementById('tasaProporcional').textContent = '';
         document.getElementById('costoFinanciero').textContent = '';
-        document.getElementById('comisionBancaria').textContent = '';
         document.getElementById('montoRecibir').textContent = '';
         return;
       }
@@ -172,11 +182,9 @@
       const montoFactura = parseFloat(montoInput) || 0;
       const costoFinanciero = montoFactura * (tasaProporcional / 100);
 
-      // Comisión bancaria fija de 15 USD
-      const comisionBancaria = 15;
-
-      // Descontar el costo financiero y la comisión bancaria
-      const montoRecibir = montoFactura - costoFinanciero - comisionBancaria;
+      // Descontar el costo financiero y la comisión bancaria.
+      const montoRecibir =
+        montoFactura - costoFinanciero - comisionBancaria;
 
       document.getElementById('diasAnticipados').textContent =
         diasAnticipados;
@@ -186,9 +194,6 @@
 
       document.getElementById('costoFinanciero').textContent =
         costoFinanciero.toFixed(2) + ' USD';
-
-      document.getElementById('comisionBancaria').textContent =
-        comisionBancaria.toFixed(2) + ' USD';
 
       document.getElementById('montoRecibir').textContent =
         montoRecibir.toFixed(2) + ' USD';
@@ -207,4 +212,3 @@
   </script>
 </body>
 </html>
-```
